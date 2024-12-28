@@ -24,6 +24,7 @@ jobs:
     env:
       APP: voir
       PLATFORM: Ubuntu
+      CPU: x86
 
     steps:
     - name: Checkout code
@@ -37,7 +38,7 @@ jobs:
 
     - name: Build
       run: |
-        make release_cli PLATFORM=${{env.PLATFORM}}
+        make release_cli PLATFORM=${{env.PLATFORM}} CPU=${{env.CPU}}
       if: matrix.bits == 64
 
     - name: Generate Artifacts
@@ -77,11 +78,11 @@ jobs:
 
         make release_cli \
           CUSTOM_CFLAGS="-target x86_64-apple-macos10.12 -DGL_SILENCE_DEPRECATION" \
-          PLATFORM=${{env.PLATFORM}} EXT=.x86
+          PLATFORM=${{env.PLATFORM}} CPU=x86
 
         make release_cli \
           CUSTOM_CFLAGS="-target arm64-apple-macos11 -DGL_SILENCE_DEPRECATION" \
-          PLATFORM=${{env.PLATFORM}} EXT=.arm64
+          PLATFORM=${{env.PLATFORM}} CPU=arm64
 
     - name: Generate Artifacts
       run: |
@@ -120,6 +121,7 @@ jobs:
     env:
       PLATFORM: Windows
       GNUTARGET: default
+      CPU: x86
 
     steps:
     - name: Checkout
@@ -135,7 +137,7 @@ jobs:
         ${{ matrix.ARCH }}-w64-mingw32-gcc.exe --version
         windres.exe --version
         dir C:\msys64\mingw64\bin
-        make release_cli PLATFORM=${{env.PLATFORM}} EXT=.exe
+        make release_cli PLATFORM=${{env.PLATFORM}} CPU=${{env.CPU}}
       shell: cmd
       if: |
         matrix.compiler == 'mingw-w64' &&
