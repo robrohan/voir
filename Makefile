@@ -11,6 +11,7 @@ C_ERRS += -Wall -Wextra -Wpedantic \
 		-Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
 		-Wredundant-decls -Wnested-externs -Wmissing-include-dirs \
 		-Wno-unused
+STD:=c99
 
 hash = $(shell git log --pretty=format:'%h' -n 1)
 
@@ -20,7 +21,7 @@ clean:
 build:
 	mkdir -p ./build/$(PLATFORM)/$(CPU)/
 
-	$(CC) $(C_ERRS) -ggdb -O2 -std=c99 \
+	$(CC) $(CUSTOM_CFLAGS) $(C_ERRS) -ggdb -O2 -std=$(STD) \
 		./src/main.c \
 		-I./vendor \
 		-I./src \
@@ -29,7 +30,7 @@ build:
 release_cli:
 	mkdir -p ./build/$(PLATFORM)/$(CPU)/
 
-	$(CC) $(C_ERRS) -O2 -std=c99 \
+	$(CC) $(CUSTOM_CFLAGS) $(C_ERRS) -O2 -std=$(STD) \
 		./src/main.c \
 		-I./vendor \
 		-I./src \
