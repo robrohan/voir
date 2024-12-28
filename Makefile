@@ -2,6 +2,7 @@
 
 CC=gcc
 APP=voir
+PLATFORM=Darwin
 
 C_ERRS += -Wall -Wextra -Wpedantic \
 		-Wformat=2 -Wno-unused-parameter -Wshadow \
@@ -15,19 +16,19 @@ clean:
 	rm -rf build
 
 build:
-	mkdir -p ./build
+	mkdir -p ./build/$(PLATFORM)/
 
 	$(CC) $(C_ERRS) -ggdb -O2 -std=c99 \
 		./src/main.c \
 		-I./vendor \
 		-I./src \
-		-o ./build/$(APP).debug -lm
+		-o ./build/$(PLATFORM)/$(APP).debug -lm
 
 release_cli:
-	mkdir -p ./build
+	mkdir -p ./build/$(PLATFORM)/
 
 	$(CC) $(C_ERRS) -O2 -std=c99 \
 		./src/main.c \
 		-I./vendor \
 		-I./src \
-		-o ./build/$(APP) -lm
+		-o ./build/$(PLATFORM)/$(APP) -lm

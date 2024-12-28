@@ -58,7 +58,7 @@ make release_cli
 ```
 
 ```bash
-./build/voir ./test_data/image1.png
+./build/${PLATFORM}/voir ./test_data/image1.png
 ```
 
 ## Debug
@@ -68,5 +68,5 @@ make build
 ```
 
 ```bash
-./build/voir.debug ./test_data/image1.png
+./build/${PLATFORM}/voir.debug ./test_data/image1.png
 ```
