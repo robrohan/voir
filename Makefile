@@ -19,15 +19,15 @@ build:
 
 	$(CC) $(C_ERRS) -ggdb -O2 -std=c99 \
 		./src/main.c \
-	-I./vendor \
-	-I./src \
-	-o ./build/$(APP).debug -lm
+		-I./vendor \
+		-I./src \
+		-o ./build/$(APP).debug -lm
 
 release_cli:
 	mkdir -p ./build
 
-	$(CC) -O2 -std=c99 \
+	$(CC) $(C_ERRS) -O2 -std=c99 \
 		./src/main.c \
-	-I./vendor \
-	-I./src \
-	-o ./build/$(APP) -lm
+		-I./vendor \
+		-I./src \
+		-o ./build/$(APP) -lm
