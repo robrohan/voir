@@ -47,10 +47,14 @@ int main(int argv, const char** argc)
         return 1;
     }
 
+    float resize_percent = 1;
+
+#ifndef _WIN32
     // Get the terminal windows size
     struct winsize sz;
     ioctl(0, TIOCGWINSZ, &sz);
     // int limit = sz.ws_row * sz.ws_col;
+#endif
 
     // load and display the iamge (as best we can)
     const char * filename = argc[1];
@@ -58,7 +62,7 @@ int main(int argv, const char** argc)
     unsigned char *image_data = stbi_load(filename, &w, &h, &n, STBIR_RGB);
     if (image_data != NULL)
     {
-        float resize_percent = 1;
+
         if (w > sz.ws_row)
             resize_percent = (float)(sz.ws_row - 2) / (float)w;
 
