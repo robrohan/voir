@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  linux:
+  ubuntu:
     permissions:
       contents: write
     runs-on: ubuntu-20.04
@@ -37,7 +37,7 @@ jobs:
 
     - name: Build
       run: |
-        make release_cli
+        make release_cli PLATFORM=${{env.PLATFORM}}
       if: matrix.bits == 64
 
     - name: Generate Artifacts

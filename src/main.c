@@ -1,6 +1,9 @@
 #include <stdio.h>
-#include <sys/ioctl.h>
 #include <signal.h>
+
+#ifndef _WIN32
+#include <sys/ioctl.h>
+#endif
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
