@@ -8,7 +8,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-#include "r2_termui.h"
+// #include "r2_termui.h"
 
 //                        0       8      16      24      32      40      48      56      64
 //                        01234567812345678123456781234567812345678123456781234567812345678
