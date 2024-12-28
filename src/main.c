@@ -63,8 +63,10 @@ int main(int argv, const char** argc)
     if (image_data != NULL)
     {
 
+#ifndef _WIN32
         if (w > sz.ws_row)
             resize_percent = (float)(sz.ws_row - 2) / (float)w;
+#endif
 
         int output_w = (int)w * resize_percent;
         int output_h = (int)h * resize_percent;
