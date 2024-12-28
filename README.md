@@ -1,12 +1,12 @@
 # Voir
 
-A simple application to display images in a terminal. It is a utitlity I use when I am ssh'ed into a server and need a quick idea of what is in a image stored on the server. It tries to resize the image to fit in the current size of the terminal, so a larger terminal will show more detail.
+A simple application to display images in a terminal. It is a utitlity I use when I am ssh'ed into a server and need a quick idea of what is in an image stored on the server. It tries to resize the image to fit in the current size of the terminal.
 
-For example, it lets you view an image like this:
+For example, in a normal sized terminal, it lets you view an image like this:
 
 ![Test image](./test_data/rob.jpg)
 
-In a terminal like this:
+in the terminal like this:
 
 ```
 iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
@@ -55,6 +55,10 @@ If you "zoom way out" in your terminal, you can get more detail in the image rep
 
 ```bash
 make release_cli
+```
+
+```bash
+./build/voir ./test_data/image1.png
 ```
 
 ## Debug

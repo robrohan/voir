@@ -1,6 +1,6 @@
 .PHONY: build
 
-CC=clang
+CC=gcc
 APP=voir
 
 C_ERRS += -Wall -Wextra -Wpedantic \
