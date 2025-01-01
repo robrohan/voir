@@ -40,7 +40,15 @@ void set_background_color(unsigned char R, unsigned char G, unsigned char B)
 
 void show_usage(const char *app)
 {
-    printf("%s -i <image>\n", app);
+    printf("%s: basic image viewer for the terminal \n", app);
+    printf("Basic usage:\n");
+    printf("\t %s -i <image>\n", app);
+    printf("Options:\n");
+    printf("\t -a - only use ascii chars (default utf8)\n");
+    printf("\t -d - use dark mode\n");
+    printf("\t -c - use colors\n");
+    printf("\t -h - help screen; this\n");
+    printf("\n");
 }
 
 int main(int argc, const char** argv)
