@@ -172,7 +172,8 @@ the cursor will move to the home position, at the upper left of the screen. */
 */
 
 // ESC[48;2;{r};{g};{b}m
-#define ESC_SET_ATTRIBUTE_MODE_RGB   "\033[38;2;%d;%d;%dm"
+#define ESC_SET_ATTRIBUTE_MODE_FOREGROUND_RGB   "\033[38;2;%d;%d;%dm"
+#define ESC_SET_ATTRIBUTE_MODE_BACKGROUND_RGB   "\033[48;2;%d;%d;%dm"
 
 #ifdef __cplusplus
 }

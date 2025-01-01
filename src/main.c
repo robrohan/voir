@@ -1,5 +1,9 @@
 #include <stdio.h>
+#include <stdbool.h>
+#include <unistd.h>    /* for getopt */
 #include <signal.h>
+#include <locale.h>
+#include <assert.h>
 
 #ifndef _WIN32
 #include <sys/ioctl.h>
@@ -11,40 +15,96 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-// #include "r2_termui.h"
+#define R2_STRINGS_IMPLEMENTATION
+#include "r2_strings.h"
 
-//                        0       8      16      24      32      40      48      56      64
-//                        01234567812345678123456781234567812345678123456781234567812345678
-//                        |-------|-------|-------|-------|-------|-------|-------|-------|
-const char* ASCIICHARS = " `,_-~+:;!litfjrxnuvczmwqpdbkhao*^I?][{}17()|/XYUJCLQ0OZ$#MW&8%B@";
+#include "r2_termui.h"
 
-unsigned char color_to_ascii_index(unsigned char R, unsigned char G, unsigned char B)
+
+int color_to_ascii_index(unsigned char R, unsigned char G, unsigned char B, int range)
 {
     // int b = (0.2126*R + 0.7152*G + 0.0722*B) / 64;
-    int b = (R + G + B) / 64;
-    return (unsigned char) b;
+    int r = range-1;
+    float c = (R + G + B);
+    float m = c / 765.0f;
+    int b = r * m;
+    assert(b >= 0 && b <= r);
+    return b;
 }
 
 void set_background_color(unsigned char R, unsigned char G, unsigned char B)
 {
-    // if (R > G && R > B)
-    //     printf(ESC_SET_ATTRIBUTE_MODE_1, 41);
-    // else if (G > R && G > B)
-    //     printf(ESC_SET_ATTRIBUTE_MODE_1, 42);
-    // else if (B > R && B > G)
-    //     printf(ESC_SET_ATTRIBUTE_MODE_1, 44);
-    // else
-    //     printf(ESC_SET_ATTRIBUTE_MODE_1, 40);
-    // printf(ESC_SET_ATTRIBUTE_MODE_RGB, R, G, B);
+    // setting RGB only works on limited terminals
+    printf(ESC_SET_ATTRIBUTE_MODE_BACKGROUND_RGB, R, G, B);
 }
 
-int main(int argv, const char** argc)
+void show_usage(const char *app)
 {
-    if (argv <= 1)
+    printf("%s -i <image>\n", app);
+}
+
+int main(int argc, const char** argv)
+{
+    // Assume en_US is on the system C.UTF-8 doesn't seem to work
+    // on MacOS
+    setlocale(LC_ALL, "en_US.UTF-8");
+
+    const char * filename = NULL;
+    bool use_color = false;
+    bool ascii_only = false;
+    bool dark_mode = false;
+    int c;
+    while ((c = getopt(argc, (char**)argv, "chadi:")) != -1)
     {
-        printf("Need an image\n");
-        printf("%s <image>\n", argc[0]);
+        switch(c)
+        {
+            case 'i':
+                filename = optarg;
+                break;
+            case 'c':
+                // add colors
+                use_color = true;
+                break;
+            case 'a':
+                // use ascii only (no utf8)
+                ascii_only = true;
+                break;
+            case 'd':
+                // light to dark vs dark to light
+                dark_mode = true;
+                break;
+            case 'h':
+                // help
+                show_usage(argv[0]);
+                return 0;
+            case '?':
+                break;
+            default:
+                show_usage(argv[0]);
+        }
+    }
+    if (filename == NULL)
+    {
+        show_usage(argv[0]);
         return 1;
+    }
+
+    s8 ASCIICHARS;
+    if (ascii_only)
+    {
+        //              0       8      16      24      32      40      48      56      64
+        //              01234567812345678123456781234567812345678123456781234567812345678
+        //              |-------|-------|-------|-------|-------|-------|-------|-------|
+        ASCIICHARS = S("`,_-~+:;!litfjrxnuvczmwqpdbkhao*^I?][{}17()|/XYUJCLQ0OZ$#MW&8%B@");
+    }
+    else
+    {
+        //                  0       8
+        //                  |-------|
+        if(dark_mode)
+            ASCIICHARS = S("▁░▒▓█");
+        else
+            ASCIICHARS = S("█▓▒░▁");
     }
 
     float resize_percent = 1;
@@ -57,7 +117,6 @@ int main(int argv, const char** argc)
 #endif
 
     // load and display the iamge (as best we can)
-    const char * filename = argc[1];
     int w, h, n;
     unsigned char *image_data = stbi_load(filename, &w, &h, &n, STBIR_RGB);
     if (image_data != NULL)
@@ -89,17 +148,17 @@ int main(int argv, const char** argc)
                 unsigned char R = output_pixels[pix + 0];
                 unsigned char G = output_pixels[pix + 1];
                 unsigned char B = output_pixels[pix + 2];
-                unsigned char b = color_to_ascii_index(R, G, B);
-                // set_background_color();
-                printf("%c%c", ASCIICHARS[b], ASCIICHARS[b]);
+                int b = color_to_ascii_index(R, G, B, ASCIICHARS.len);
+                if(use_color) set_background_color(R, G, B);
+                printf("%lc%lc", (int)ASCIICHARS.rune[b], (int)ASCIICHARS.rune[b]);
+                if(use_color) set_background_color(0, 0, 0);
             }
-            // reset the color
-            // printf(ESC_SET_ATTRIBUTE_MODE_1, 40);
             printf("\n");
         }
         free(output_pixels);
     }
 
+    free_S(ASCIICHARS);
     stbi_image_free(image_data);
     return 0;
 }
