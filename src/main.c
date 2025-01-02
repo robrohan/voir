@@ -21,6 +21,52 @@
 
 #include "r2_termui.h"
 
+typedef struct ansi_color {
+    int code;
+    int rgb[3];
+} ansi_color;
+
+#define NUM_COLORS 16
+ansi_color ANSI_COLORS[NUM_COLORS] = {
+    { .code=40, .rgb={0,0,0} },
+    { .code=41, .rgb={170,0,0} },
+    { .code=42, .rgb={0,170,0} },
+    { .code=43, .rgb={170,85,0} },
+    { .code=44, .rgb={0,0,170} },
+    { .code=45, .rgb={170,0,170} },
+    { .code=46, .rgb={0,170,170} },
+    { .code=47, .rgb={170,170,170} },
+    { .code=100, .rgb={85,85,85} },
+    { .code=101, .rgb={255,85,85} },
+    { .code=102, .rgb={85,255,85} },
+    { .code=103, .rgb={255,255,85} },
+    { .code=104, .rgb={85,85,255} },
+    { .code=105, .rgb={255,85,255} },
+    { .code=106, .rgb={85,255,255} },
+    { .code=107, .rgb={255,255,255} }
+};
+
+int color_serach(int R, int G, int B)
+{
+    float smallest = 1000.0;
+    int smallest_idx = NUM_COLORS;
+    for (int c = 0; c < NUM_COLORS; c++)
+    {
+        float n1 = (ANSI_COLORS[c].rgb[0] - R);
+        float n2 = (ANSI_COLORS[c].rgb[1] - G);
+        float n3 = (ANSI_COLORS[c].rgb[2] - B);
+        float d = sqrt( (double)((n1*n1)+(n2*n2)+(n3*n3)));
+        if(d < smallest) {
+            smallest = d;
+            smallest_idx = c;
+        }
+    }
+    // printf("%d idx: %d (%d, %d, %d) \n", smallest, smallest_idx,
+    //     ANSI_COLORS[smallest_idx].rgb[0],
+    //     ANSI_COLORS[smallest_idx].rgb[1],
+    //     ANSI_COLORS[smallest_idx].rgb[2]);
+    return ANSI_COLORS[smallest_idx].code;
+}
 
 int color_to_ascii_index(unsigned char R, unsigned char G, unsigned char B, int range)
 {
@@ -35,8 +81,10 @@ int color_to_ascii_index(unsigned char R, unsigned char G, unsigned char B, int 
 
 void set_background_color(unsigned char R, unsigned char G, unsigned char B)
 {
+    int termcode = color_serach((int)R, (int)G, (int)B);
     // setting RGB only works on limited terminals
-    printf(ESC_SET_ATTRIBUTE_MODE_BACKGROUND_RGB, R, G, B);
+    // printf(ESC_SET_ATTRIBUTE_MODE_BACKGROUND_RGB, R, G, B);
+    printf(ESC_SET_ATTRIBUTE_MODE_1, termcode);
 }
 
 void show_usage(const char *app)
@@ -160,7 +208,8 @@ int main(int argc, const char** argv)
                 int b = color_to_ascii_index(R, G, B, ASCIICHARS.len);
                 if(use_color) set_background_color(R, G, B);
                 printf("%lc%lc", (int)ASCIICHARS.rune[b], (int)ASCIICHARS.rune[b]);
-                if(use_color) set_background_color(0, 0, 0);
+                if(use_color)
+                    printf(ESC_SET_ATTRIBUTE_MODE_1, 0);
             }
             printf("\n");
         }
