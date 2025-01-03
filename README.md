@@ -23,6 +23,18 @@ Options:
 	 -h - help screen; this
 ```
 
+## Building on AWS Cloudshell
+
+```bash
+sudo yum groupinstall "Development Tools" -y
+git clone https://github.com/robrohan/voir.git
+cd voir
+make release_cli
+./build/Linux/x86_64/voir -i &lt;image_file&gt;
+```
+
+![Cloudshell Example](./doc/cloudshell.png)
+
 ## Building
 
 ### Release
