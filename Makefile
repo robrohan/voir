@@ -3,8 +3,8 @@
 CC=gcc
 APP=voir
 
-PLATFORM=Darwin
-CPU=x86
+PLATFORM:=$(shell uname -s)
+CPU:=$(shell uname -m)
 
 C_ERRS += -Wall -Wextra -Wpedantic \
 		-Wformat=2 -Wno-unused-parameter -Wshadow \
