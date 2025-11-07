@@ -96,6 +96,8 @@ void show_usage(const char *app)
     printf("\t -a - only use ascii chars (default utf8)\n");
     printf("\t -d - use dark mode\n");
     printf("\t -c - use colors\n");
+    printf("\t -x - number of column (for output)\n");
+    printf("\t -y - number of rows (for output)\n");
     printf("\t -h - help screen; this\n");
     printf("\n");
 }
@@ -110,8 +112,12 @@ int main(int argc, const char** argv)
     bool use_color = false;
     bool ascii_only = false;
     bool dark_mode = false;
+
+    int output_w = 0;
+    int output_h = 0;
+
     int c;
-    while ((c = getopt(argc, (char**)argv, "chadi:")) != -1)
+    while ((c = getopt(argc, (char**)argv, "chadi:x:y:")) != -1)
     {
         switch(c)
         {
@@ -129,6 +135,13 @@ int main(int argc, const char** argv)
             case 'd':
                 // light to dark vs dark to light
                 dark_mode = true;
+                break;
+            case 'x':
+                output_w = atoi(optarg);
+                output_w = output_w >> 1;
+                break;
+            case 'y':
+                output_h = atoi(optarg);
                 break;
             case 'h':
                 // help
@@ -184,8 +197,8 @@ int main(int argc, const char** argv)
             resize_percent = (float)(sz.ws_row - 2) / (float)w;
 #endif
 
-        int output_w = (int)w * resize_percent;
-        int output_h = (int)h * resize_percent;
+        if(output_w == 0) output_w = (int)w * resize_percent;
+        if(output_h == 0) output_h = (int)h * resize_percent;
         unsigned char *output_pixels = calloc(sizeof(unsigned char), output_w * output_h * n);
 
         stbir_resize_uint8_linear(
