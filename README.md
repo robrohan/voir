@@ -19,12 +19,15 @@ See `voir -h` for up to date usage. As of this writing:
 ```bash
 voir: basic image viewer for the terminal
 Basic usage:
-	 voir -i &lt;image&gt;
+         ./build/Darwin/arm64/voir.debug -i &lt;image&gt;
 Options:
-	 -a - only use ascii chars (default utf8)
-	 -d - use dark mode
-	 -c - use colors
-	 -h - help screen; this
+         -a - only use ascii chars (default utf8)
+         -d - use dark mode
+         -c - use colors (nearest ANSI 16-color)
+         -r - use true RGB colors (requires 24-bit terminal support)
+         -x - number of column (for output)
+         -y - number of rows (for output)
+         -h - help screen; this
 ```
 
 ## Building on AWS Cloudshell
