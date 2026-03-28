@@ -21,7 +21,7 @@ See `voir -h` for up to date usage. As of this writing:
 ```bash
 voir: basic image viewer for the terminal
 Basic usage:
-         voir -i &lt;image&gt;
+         voir -i <image>
 Options:
          -a - only use ascii chars (default utf8)
          -d - use dark mode
@@ -39,7 +39,7 @@ sudo yum groupinstall "Development Tools" -y
 git clone https://github.com/robrohan/voir.git
 cd voir
 make release_cli
-./build/Linux/x86_64/voir -i &lt;image_file&gt;
+./build/Linux/x86_64/voir -i <image_file>
 ```
 
 ![Cloudshell Example](./doc/cloudshell.png)
