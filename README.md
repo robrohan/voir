@@ -4,7 +4,7 @@
 
 Voir is a simple application to display images in a terminal. It is a utility I use when I am ssh'ed into a server and need a quick idea of what is in an image stored on the server. It tries to resize the image to fit in the current size of the terminal.
 
-Unlike similar utilities, voir is small, has no external dependencies, and standalone.
+Unlike similar utilities, voir is small, has no external dependencies, and is a standalone binary.
 
 For example, in a normal sized terminal, it lets you view an image like this:
 
