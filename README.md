@@ -2,7 +2,9 @@
 
 [![Build Voir For Distribution](https://github.com/robrohan/voir/actions/workflows/build.yml/badge.svg)](https://github.com/robrohan/voir/actions/workflows/build.yml)
 
-Voir is a simple application to display images in a terminal. It is a utitlity I use when I am ssh'ed into a server and need a quick idea of what is in an image stored on the server. It tries to resize the image to fit in the current size of the terminal.
+Voir is a simple application to display images in a terminal. It is a utility I use when I am ssh'ed into a server and need a quick idea of what is in an image stored on the server. It tries to resize the image to fit in the current size of the terminal.
+
+Unlike similar utilities, voir is small, has no external dependencies, and standalone.
 
 For example, in a normal sized terminal, it lets you view an image like this:
 
@@ -19,7 +21,7 @@ See `voir -h` for up to date usage. As of this writing:
 ```bash
 voir: basic image viewer for the terminal
 Basic usage:
-         ./build/Darwin/arm64/voir.debug -i &lt;image&gt;
+         voir -i &lt;image&gt;
 Options:
          -a - only use ascii chars (default utf8)
          -d - use dark mode
