@@ -8,6 +8,10 @@ For example, in a normal sized terminal, it lets you view an image like this:
 
 ![Example](./doc/example.jpg)
 
+![[Example2](./doc/example2.png)
+
+![[Example3](./doc/example3.png)
+
 ## Usage
 
 See `voir -h` for up to date usage. As of this writing:

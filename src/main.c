@@ -79,12 +79,23 @@ int color_to_ascii_index(unsigned char R, unsigned char G, unsigned char B, int 
     return b;
 }
 
-void set_background_color(unsigned char R, unsigned char G, unsigned char B)
+void set_background_color_ansi(unsigned char R, unsigned char G, unsigned char B)
 {
     int termcode = color_serach((int)R, (int)G, (int)B);
-    // setting RGB only works on limited terminals
-    // printf(ESC_SET_ATTRIBUTE_MODE_BACKGROUND_RGB, R, G, B);
     printf(ESC_SET_ATTRIBUTE_MODE_1, termcode);
+}
+
+void set_background_color_rgb(unsigned char R, unsigned char G, unsigned char B)
+{
+    printf(ESC_SET_BG_RGB, (int)R, (int)G, (int)B);
+}
+
+void set_background_color(unsigned char R, unsigned char G, unsigned char B, bool rgb_mode)
+{
+    if (rgb_mode)
+        set_background_color_rgb(R, G, B);
+    else
+        set_background_color_ansi(R, G, B);
 }
 
 void show_usage(const char *app)
@@ -95,7 +106,8 @@ void show_usage(const char *app)
     printf("Options:\n");
     printf("\t -a - only use ascii chars (default utf8)\n");
     printf("\t -d - use dark mode\n");
-    printf("\t -c - use colors\n");
+    printf("\t -c - use colors (nearest ANSI 16-color)\n");
+    printf("\t -r - use true RGB colors (requires 24-bit terminal support)\n");
     printf("\t -x - number of column (for output)\n");
     printf("\t -y - number of rows (for output)\n");
     printf("\t -h - help screen; this\n");
@@ -110,6 +122,7 @@ int main(int argc, const char** argv)
 
     const char * filename = NULL;
     bool use_color = false;
+    bool use_rgb = false;
     bool ascii_only = false;
     bool dark_mode = false;
 
@@ -117,7 +130,7 @@ int main(int argc, const char** argv)
     int output_h = 0;
 
     int c;
-    while ((c = getopt(argc, (char**)argv, "chadi:x:y:")) != -1)
+    while ((c = getopt(argc, (char**)argv, "crhadi:x:y:")) != -1)
     {
         switch(c)
         {
@@ -126,6 +139,11 @@ int main(int argc, const char** argv)
                 break;
             case 'c':
                 // add colors
+                use_color = true;
+                break;
+            case 'r':
+                // use true RGB colors
+                use_rgb = true;
                 use_color = true;
                 break;
             case 'a':
@@ -219,7 +237,7 @@ int main(int argc, const char** argv)
                 unsigned char G = output_pixels[pix + 1];
                 unsigned char B = output_pixels[pix + 2];
                 int b = color_to_ascii_index(R, G, B, ASCIICHARS.len);
-                if(use_color) set_background_color(R, G, B);
+                if(use_color) set_background_color(R, G, B, use_rgb);
                 printf("%lc%lc", (int)ASCIICHARS.rune[b], (int)ASCIICHARS.rune[b]);
                 if(use_color)
                     printf(ESC_SET_ATTRIBUTE_MODE_1, 0);
