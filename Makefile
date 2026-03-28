@@ -15,8 +15,19 @@ STD:=c99
 
 hash = $(shell git log --pretty=format:'%h' -n 1)
 
+help:
+	@echo "make clean"
+	@echo "make fetch"
+	@echo "make build"
+	@echo "make release_cli"
+
 clean:
 	rm -rf build
+
+fetch:
+	curl https://raw.githubusercontent.com/robrohan/r2/refs/heads/main/r2_strings.h > ./vendor/r2_strings.h
+	curl https://raw.githubusercontent.com/robrohan/r2/refs/heads/main/r2_termui.h > ./vendor/r2_termui.h
+	curl https://raw.githubusercontent.com/robrohan/r2/refs/heads/main/r2_unit.h > ./vendor/r2_unit.h
 
 build:
 	mkdir -p ./build/$(PLATFORM)/$(CPU)/

@@ -26,6 +26,52 @@
 
     You can then include without the define to just use the types
 
+OVERVIEW
+    The main type is s8, a UTF-8 string view. It has four fields:
+
+        data      - pointer to the original string bytes (see OWNERSHIP below)
+        rune      - heap-allocated array of codepoints (uint32_t), one per
+                    UTF-8 character; always zero-terminated
+        cap       - size of the string in *bytes*
+        len       - length of the string in *runes* (codepoints)
+
+    Use `len` when iterating characters, `cap` when working with raw bytes:
+
+        s8 str = S("café");
+        str.cap == 5   // c(1) + a(1) + f(1) + é(2)
+        str.len == 4   // four visible characters
+
+    Call free_S() when you are done with the string to release the rune array.
+
+OWNERSHIP
+    s8 is a *borrowing* view: S() stores a pointer to the source string
+    without copying it. The caller is responsible for keeping the source
+    memory alive for at least as long as the s8 is in use.
+
+    This is safe with string literals (static lifetime):
+
+        s8 str = S("Hello");   // fine, literal lives forever
+
+    This is safe when the source buffer outlives the s8:
+
+        char buf[64];
+        snprintf(buf, sizeof(buf), "Hello, %s", name);
+        s8 str = S(buf);
+        // use str here, while buf is still in scope
+        free_S(str);
+
+    This is NOT safe -- do not return an s8 that points into a local buffer:
+
+        s8 bad(void) {
+            char buf[64];
+            snprintf(buf, sizeof(buf), "oops");
+            return S(buf);   // buf dies here; str.data is a dangling pointer
+        }
+
+    The rune array (str.rune) is heap-allocated by S() and is owned by
+    the s8. Always call free_S() to release it. Freeing the source string
+    does not free the rune array, and vice versa.
+
 LICENSE
     See end of file for license information.
 */
@@ -43,25 +89,25 @@ extern "C"
     typedef uint32_t rune;
 
     /**
-     * This represents a string of char bytes that can be
+     * This represents a string of char bytes that can be 
      * represented by UTF-8. When you create this struct
      * by doing `s8 str = S("👋World")` the resulting struct
      * has both the raw byte data and a parsed array of "runes"
      * aka single UTF8 code points.
      * *Note*: not all runes are printable, and some runes are
-     * modifiers (like joiner sequences). So take care when
+     * modifiers (like joiner sequences). So take care when 
      * displaying runes in, say a terminal. Displaying 3 runes
-     * might not always take 3 text spaces, it might only take
+     * might not always take 3 text spaces, it might only take 
      * 1 for example.
      */
     typedef struct s8
     {
-        // The string data in raw bytes
+        // The string data a raw bytes
         char *data;
         // The integer representation of the bytes as utf8
         rune *rune;
-        // The size of the string (in bytes)
-        unsigned int size;
+        // The capacity of the string (in bytes)
+        unsigned int cap;
         // The length of the string (in runes)
         unsigned long len;
     } s8;
@@ -69,7 +115,7 @@ extern "C"
     /**
      * Create a utf8 string struct from a char array (has size and
      * utf8 string length properties).
-     *
+     * 
      * Note: use free_S() when done with the string.
      */
     s8 S(const char *);
@@ -81,6 +127,9 @@ extern "C"
 
 /* implementation */
 #ifdef R2_STRINGS_IMPLEMENTATION
+
+#include <stdio.h>
+#include <stdlib.h>
 
     typedef struct
     {
@@ -150,11 +199,8 @@ extern "C"
         char tmp[5] = {0};
         int srci = 0;
         int len = 0;
-        for (int i = 0; i < src_size; i++)
+        while (srci < src_size && str[srci] != 0)
         {
-            if (str[srci] == 0)
-                break;
-
             // look at the first char to see if the bytes
             // say this rune is more than one byte
             int plen = utf8_len(str[srci]);
@@ -189,6 +235,9 @@ extern "C"
 
         // string length in bytes
         unsigned long l = strlen(s);
+        if (l == 0)
+            return (s8){(char *)s, NULL, 0, 0};
+
         // string as an array of integers
         rune *i = calloc(l, sizeof(rune));
         if (!i)
